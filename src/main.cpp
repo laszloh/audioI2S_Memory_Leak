@@ -51,7 +51,11 @@ void setup() {
 		while (audio.isRunning()) {
 			yield();
 			constexpr size_t trasherSize = 512;
-			void *trasher = ps_malloc(trasherSize);
+			void *trasher = heap_caps_malloc(trasherSize, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
+			if(!trasher) {
+				log_e("Failed to allocate 512 bytes in PSRAM. Rebooting...");
+				ESP.restart();
+			}
 			memset(trasher, 0, trasherSize);
 			audio.loop();
 			free(trasher);
